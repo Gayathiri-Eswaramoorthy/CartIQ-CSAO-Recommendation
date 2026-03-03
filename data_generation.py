@@ -119,10 +119,11 @@ def simulate_orders(users_df, restaurants_df, items_df, menus):
     for order_id in tqdm(range(NUM_ORDERS)):
 
         user = users_df.sample(1).iloc[0]
+        user_city = user["city"]
 
         # Select restaurant in same city
         city_restaurants = restaurants_df[
-            restaurants_df["city"] == user["city"]
+            restaurants_df["city"] == user_city
         ]
         restaurant = city_restaurants.sample(1).iloc[0]
 
@@ -146,6 +147,7 @@ def simulate_orders(users_df, restaurants_df, items_df, menus):
         # 1–5 additional add-on attempts
         for step in range(random.randint(1, 5)):
 
+            cart_state_id = f"{order_id}_{step}"
             candidates = random.sample(menu, min(10, len(menu)))
             accepted_item = None
 
@@ -194,6 +196,7 @@ def simulate_orders(users_df, restaurants_df, items_df, menus):
 
                 training_rows.append({
                     "order_id": order_id,
+                    "cart_state_id": cart_state_id,
                     "user_id": user["user_id"],
                     "restaurant_id": restaurant["restaurant_id"],
                     "timestamp": timestamp,
